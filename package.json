@@ -1,0 +1,53 @@
+{
+  "name": "XBOT",
+  "version": "1.0.0",
+  "description": "Xbot for whatsapp online with termux",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node index"
+  },
+  "keywords": [
+    "k"
+  ],
+  "author": "affis junianto",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/affisjunianto/botwasapv2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/affisjunianto/botwasapv2/issues"
+  },
+"homepage": "https://github.com/affisjunianto/botwasapv2/readme",
+"license": "ISC",
+"dependencies": {
+    "@adiwajshing/baileys": "^3.3.0",
+    "async": "^2.4.1",
+    "axios": "^0.21.0",
+    "cfonts": "^2.9.0",
+    "dotenv": "^8.2.0",
+    "brainly-scraper": "^1.0.3",
+    "fs-extra": "^9.0.1",
+    "parse-ms": "^2.1.0",
+    "escape-string-regexp": "^1.0.5",
+    "fake-useragent": "^1.0.1",
+    "fluent-ffmpeg": "^2.1.2",
+    "got": "^11.8.1",
+    "image-to-base64": "^2.1.1",
+    "moment-timezone": "^0.5.32",
+    "multistream": "^2.1.0",
+    "needle": "^2.5.2",
+    "node-fetch": "^2.6.1",
+    "node-gtts": "^2.0.2",
+    "node-tesseract-ocr": "^2.0.0",
+    "performance-now": "^2.1.0",
+    "qrcode-terminal": "^0.12.0",
+    "remove.bg": "^1.3.0",
+    "request": "^2.81.0",
+    "spinnies": "^0.5.1",
+    "tiktok-scraper": "^1.4.7"
+  }
+}
