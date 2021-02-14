@@ -521,9 +521,18 @@ client.on('group-participants-update', async (anu) => {
 			
 			switch(command) {
 				//itsmei 
-				case 'play':
-				
-				break
+		case 'play':
+		if (!isRegistered) return reply(ind.noregis())
+		if (isLimit(sender)) return reply(ind.limitend(pusname)) 
+                reply(ind.wait())
+                anu = await fetchJson(`https://api.vhtear.com/ytmp3?query=${body.slice(6)}&apikey=${apivhtear}`)
+               if (anu.error) return reply(anu.error)
+                 infomp3 = `*「❗」Lagu Ditemukan*\n➸ Judul : ${anu.result.title}\n➸ Durasi : ${anu.result.duration}\n➸ Size : ${anu.result.size}\n\n*[WAIT] SEDANG PROSES EA CO*`
+                buffer = await getBuffer(anu.result.image)
+                lagu = await getBuffer(anu.result.mp3)
+                client.sendMessage(from, buffer, image, {quoted: mek, caption: infomp3})
+                client.sendMessage(from, lagu, audio, {mimetype: 'audio/mp4', quoted: mek})
+                break		
 				//qr 
 				case 'qrcode':
 				if (!isRegistered) return reply(ind.noregis())
