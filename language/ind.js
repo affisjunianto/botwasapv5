@@ -279,3 +279,4 @@ exports.dellprem = (hnom) => {
 exports.premon = (pushname) => {
 	return`MAAF ${pushname} ANDA BUKAN USER PREMIUM`
 }
+
