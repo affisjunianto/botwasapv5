@@ -8,7 +8,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "node index"
+    "start": "node index",
+    "play": "nodemon index"
   },
   "keywords": [
     "k"
@@ -36,6 +37,7 @@
     "fake-useragent": "^1.0.1",
     "fluent-ffmpeg": "^2.1.2",
     "got": "^11.8.1",
+    "ms": "^2.1.3",
     "image-to-base64": "^2.1.1",
     "moment-timezone": "^0.5.32",
     "multistream": "^2.1.0",

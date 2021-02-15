@@ -16,6 +16,7 @@ const {
 const qrcode = require("qrcode-terminal") 
 const moment = require("moment-timezone") 
 const fs = require("fs") 
+const util = require('util')
 const crypto = require('crypto')
 const imageToBase64 = require('image-to-base64')
 const axios = require('axios')
@@ -23,11 +24,14 @@ const { color, bgcolor } = require('./lib/color')
 const { donasi } = require('./lib/donasi')
 const { fetchJson } = require('./lib/fetcher')
 const { recognize } = require('./lib/ocr')
-const { exec } = require("child_process")
+const { exec, spawn } = require("child_process")
 const { wait, simih, getBuffer, h2k, generateMessageID, getGroupAdmins, getRandom, banner, start, info, success, close } = require('./lib/functions')
 const tiktod = require('tiktok-scraper')
 const brainly = require('brainly-scraper')
 const ffmpeg = require('fluent-ffmpeg')
+const ms = require('parse-ms')
+const toMs = require('ms')
+const fontPath = ('./lib/Zahraaa.ttf')
 const path = require('path')
 const cd = 4.32e+7
 const { ind } = require('./language')
@@ -62,6 +66,9 @@ const event = JSON.parse(fs.readFileSync('./database/bot/event.json'))
 const _limit = JSON.parse(fs.readFileSync('./database/user/limit.json'))
 const uang = JSON.parse(fs.readFileSync('./database/user/uang.json'))
 const prem = JSON.parse(fs.readFileSync('./database/user/prem.json'))
+const antilink = JSON.parse(fs.readFileSync('./database/group/antilink.json'))
+const bad = JSON.parse(fs.readFileSync('./database/group/bad.json'))
+const badword = JSON.parse(fs.readFileSync('./database/group/badword.json'))
 /*********** END LOAD ***********/
 
 /********** FUNCTION ***************/
@@ -225,9 +232,36 @@ const getLevelingXp = (sender) => {
                 _limit[position].limit += 1
                 fs.writeFileSync('./database/user/limit.json', JSON.stringify(_limit))
             }
-        }
+        } 
         
-        
+        const getPremiumExpired = (sender) => {
+		    let position = null
+		    Object.keys(prem).forEach((i) => {
+		        if (prem[i].id === sender) {
+		            position = i
+		        }
+		    })
+		    if (position !== null) {
+		        return prem[position].expired
+		    }
+		} 
+		
+		const expiredCheck = () => {
+		    setInterval(() => {
+		        let position = null
+		        Object.keys(prem).forEach((i) => {
+		            if (Date.now() >= prem[i].expired) {
+		                position = i
+		            }
+		        })
+		        if (position !== null) {
+		            console.log(`Premium expired: ${prem[position].id}`)
+		            prem.splice(position, 1)
+		            fs.writeFileSync('./database/bot/prem.json', JSON.stringify(prem))
+		        }
+		    }, 1000)
+		}
+		
          
 function kyun(seconds){
   function pad(s){
@@ -294,6 +328,7 @@ client.on('group-participants-update', async (anu) => {
 	    }
 	})
 
+
 	client.on('message-new', async (mek) => {
 		try {
 			if (!mek.message) return
@@ -310,6 +345,8 @@ client.on('group-participants-update', async (anu) => {
 			const timu = moment.tz('Asia/Jakarta').add(20, 'days').calendar();
             body = (type === 'conversation' && mek.message.conversation.startsWith(prefix)) ? mek.message.conversation : (type == 'imageMessage') && mek.message.imageMessage.caption.startsWith(prefix) ? mek.message.imageMessage.caption : (type == 'videoMessage') && mek.message.videoMessage.caption.startsWith(prefix) ? mek.message.videoMessage.caption : (type == 'extendedTextMessage') && mek.message.extendedTextMessage.text.startsWith(prefix) ? mek.message.extendedTextMessage.text : ''
 			budy = (type === 'conversation') ? mek.message.conversation : (type === 'extendedTextMessage') ? mek.message.extendedTextMessage.text : ''
+			var pes = (type === 'conversation' && mek.message.conversation) ? mek.message.conversation : (type == 'imageMessage') && mek.message.imageMessage.caption ? mek.message.imageMessage.caption : (type == 'videoMessage') && mek.message.videoMessage.caption ? mek.message.videoMessage.caption : (type == 'extendedTextMessage') && mek.message.extendedTextMessage.text ? mek.message.extendedTextMessage.text : ''
+			const messagesC = pes.slice(0).trim().split(/ +/).shift().toLowerCase()
 			const command = body.slice(1).trim().split(/ +/).shift().toLowerCase()
 			const args = body.trim().split(/ +/).slice(1)
 			const isCmd = body.startsWith(prefix)
@@ -329,7 +366,7 @@ client.on('group-participants-update', async (anu) => {
             /************** SCURITY FEATURE ************/
             const isEventon = isGroup ? event.includes(from) : false
             const isRegistered = checkRegisteredUser(sender)
-            const isPrem = prem.includes(sender)
+            const isBadWord = isGroup ? badword.includes(from) : false
             const isBotGroupAdmins = groupAdmins.includes(botNumber) || false
             const isLevelingOn = isGroup ? _leveling.includes(from) : false
 			const isGroupAdmins = groupAdmins.includes(sender) || false
@@ -337,6 +374,8 @@ client.on('group-participants-update', async (anu) => {
 			const isNsfw = isGroup ? nsfw.includes(from) : false
 			const isSimi = isGroup ? samih.includes(from) : false
 			const isOwner = ownerNumber.includes(sender)
+			const isPrem = prem.includes(sender) || isOwner
+			const isAntiLink = isGroup ? antilink.includes(from) : false
 			const isImage = type === 'imageMessage'
 			const isUrl = (url) => {
 			    return url.match(new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/, 'gi'))
@@ -357,6 +396,8 @@ client.on('group-participants-update', async (anu) => {
 			client.sendMessage(from, pesan, tipe, {quoted: { key: { fromMe: false, participant: `${target}`, ...(from ? { remoteJid: from } : {}) }, message: { conversation: `${target2}` }}})
 			}
 	        /*****************END SCURITY FEATURE ********/
+			
+			expiredCheck()
 			
 			//function rank 
 			const levelRole = getLevelingLevel(sender, _level)
@@ -406,6 +447,9 @@ client.on('group-participants-update', async (anu) => {
 			var premi = '*X*'
 			if (isPrem) {
 				premi = '*✓*'
+			} 
+			if (isOwner) {
+				premi = '*owner*'
 			}
 				
 				
@@ -445,7 +489,7 @@ client.on('group-participants-update', async (anu) => {
                         fs.writeFileSync('./database/user/limit.json', JSON.stringify(_limit))
                         client.sendMessage(from, ind.limitcount(limitCounts), text, { quoted : mek})
                     }
-				}
+				} 
 		
 			//funtion limited
             const isLimit = (sender) =>{ 
@@ -470,36 +514,101 @@ client.on('group-participants-update', async (anu) => {
                 _limit.push(obj)
                 fs.writeFileSync('./database/user/limit.json',JSON.stringify(_limit))
            return false
-       }
-     }
-        
-            if (isGroup) {
-				try {
-					const getmemex = groupMembers.length
+     	  }
+     	}
+     	   
+     	       if (isGroup) {
+					try {
+						const getmemex = groupMembers.length	
 					    if (getmemex <= memberlimit) {
-                            client.groupLeave(from)
+						reply(`maaf member group belum memenuhi syarat. minimal member group adalah ${memberlimit}`)
+						setTimeout( () => {
+ 	                           client.groupLeave(from) 
+ 					   	}, 5000)
+								setTimeout( () => {
+								client.updatePresence(from, Presence.composing)
+								reply("1detik")
+							}, 4000)
+								setTimeout( () => {
+								client.updatePresence(from, Presence.composing)
+								reply("2detik")
+							}, 3000)
+								setTimeout( () => {
+								client.updatePresence(from, Presence.composing)
+								reply("3detik")
+							}, 2000)
+								setTimeout( () => {
+								client.updatePresence(from, Presence.composing)
+								reply("4detik")
+							}, 1000)
+								setTimeout( () => {
+								client.updatePresence(from, Presence.composing)
+								reply("5detik")
+							}, 0)
 					    }
 		       } catch (err) { console.error(err)  }
-        }
-        	
-        //	if (isGroup && isAntiLon && !isGroupAdmins && !isOwner) {
-        //		if (budy.includes(new RegExp(/(https:\/\/chat.whatsapp.com)/gi))) {
-        //			client.sendMessage(from, `link group detected\ni will kick u`, teks, {quoted:mek})
-        //		 }
-       //	}
-        
-      
-            //function balance
-            if (isRegistered ) {
-            const checkATM = checkATMuser(sender)
-            try {
-                if (checkATM === undefined) addATM(sender)
-                const uangsaku = Math.floor(Math.random() * 10) + 90
-                addKoinUser(sender, uangsaku)
-            } catch (err) {
-                console.error(err)
+ 	       }
+ 
+ 	   	if (isGroup && isBadWord) {
+            if (bad.includes(messagesC)) {
+                if (!isGroupAdmins) {
+                    return reply("JAGA UCAPAN DONG!! 😠")
+                        .then(() => client.groupRemove(from, sender))
+                        .then(() => {
+                            client.sendMessage(from, `*「 ANTI BADWORD 」*\nKamu dikick karena berkata kasar!`, text ,{quoted: mek})
+                        }).catch(() => client.sendMessage(from, `Untung cya bukan admin, kalo admin udah cya kick!`, text , {quoted : mek}))
+                } else {
+                    return reply( "Tolong Jaga Ucapan Min 😇")
+                }
             }
         }
+ 
+				//function antilink 
+				if (messagesC.includes("://chat.whatsapp.com/")){
+					if (!isGroup) return
+					if (!isAntiLink) return
+					if (isGroupAdmins) return reply('karena kamu adalah admin group, bot tidak akan kick kamu')
+					client.updatePresence(from, Presence.composing)
+					if (messagesC.includes("#izinadmin")) return reply("#izinadmin diterima")
+					var kic = `${sender.split("@")[0]}@s.whatsapp.net`
+						reply(`Link Group Terdeteksi maaf ${sender.split("@")[0]} anda akan di kick dari group 5detik lagi`)
+						setTimeout( () => {
+						client.groupRemove(from, [kic]).catch((e)=>{reply(`*ERR:* ${e}`)})
+					}, 5000)
+						setTimeout( () => {
+						client.updatePresence(from, Presence.composing)
+						reply("1detik")
+					}, 4000)
+						setTimeout( () => {
+						client.updatePresence(from, Presence.composing)
+						reply("2detik")
+					}, 3000)
+						setTimeout( () => {
+						client.updatePresence(from, Presence.composing)
+						reply("3detik")
+					}, 2000)
+						setTimeout( () => {
+						client.updatePresence(from, Presence.composing)
+						reply("4detik")
+					}, 1000)
+						setTimeout( () => {
+						client.updatePresence(from, Presence.composing)
+						reply("5detik")
+					}, 0)
+				}
+ 	       
+ 	     
+ 	           //function balance
+ 	           if (isRegistered ) {
+ 	           const checkATM = checkATMuser(sender)
+ 	           try {
+ 	               if (checkATM === undefined) addATM(sender)
+ 	               const uangsaku = Math.floor(Math.random() * 10) + 90
+	                addKoinUser(sender, uangsaku)
+  	          } catch (err) {
+   	             console.error(err)
+   	         }
+	        }
            
             
              //kolor
@@ -507,6 +616,7 @@ client.on('group-participants-update', async (anu) => {
 			
 			//detector media
 			const isMedia = (type === 'imageMessage' || type === 'videoMessage')
+			const isQuotedMsg = type === 'extendedTextMessage' && content.includes('extendedTextMessage')
 			const isQuotedImage = type === 'extendedTextMessage' && content.includes('imageMessage')
 			const isQuotedVideo = type === 'extendedTextMessage' && content.includes('videoMessage')
 			const isQuotedSticker = type === 'extendedTextMessage' && content.includes('stickerMessage')
@@ -519,11 +629,13 @@ client.on('group-participants-update', async (anu) => {
 			if (isCmd && isGroup) console.log('\x1b[1;31m~\x1b[1;37m>', '[\x1b[1;32mEXEC\x1b[1;37m]', time, color(command), 'from', color(sender.split('@')[0]), 'in', color(groupName), 'args :', color(args.length))
 			if (!isCmd && isGroup) console.log('\x1b[1;31m~\x1b[1;37m>', '[\x1b[1;31mRECV\x1b[1;37m]', time, color('Message'), 'from', color(sender.split('@')[0]), 'in', color(groupName), 'args :', color(args.length))
 			
-			switch(command) {
-				//itsmei 
-				case 'play':
-				
+			switch(command) { 
+				//premiom
+				case 'checkprem':
+				const cekExp = ms(getPremiumExpired(sender) - Date.now())
+				reply(`*「 PREMIUM EXPIRED 」*\n\n➸ *ID*: ${sender.split('@')[0]}\n➸ *Premium left*: ${cekExp.days} day(s) ${cekExp.hours} hour(s) ${cekExp.minutes} minute(s)`)
 				break
+				
 				//qr 
 				case 'qrcode':
 				if (!isRegistered) return reply(ind.noregis())
@@ -707,17 +819,22 @@ client.on('group-participants-update', async (anu) => {
                 if (namaUser.length >= 30) return reply(`why is your name so long it's a name or a train`)
                 if (umurUser > 40) return reply(`your age is too  old maximum 40 years`)
                 if (umurUser < 12) return reply(`your age is too young minimum 12 years`)
+                try {
+					ppimg = await client.getProfilePicture(`${sender.split('@')[0]}@c.us`)
+				} catch {
+					ppimg = 'https://i0.wp.com/www.gambarunik.id/wp-content/uploads/2019/06/Top-Gambar-Foto-Profil-Kosong-Lucu-Tergokil-.jpg'
+				}
                 veri = sender
                 if (isGroup) {
                     addRegisteredUser(sender, namaUser, umurUser, time, serialUser)
-                    await reply(ind.registered(namaUser, umurUser, serialUser, time, sender))
+                    await client.sendMessage(from, ppimg, image, {quoted: mek, caption: ind.registered(namaUser, umurUser, serialUser, time, sender)})
                     addATM(sender)
                     addLevelingId(sender)
                     checkLimit(sender)
                     console.log(color('[REGISTER]'), color(time, 'yellow'), 'Name:', color(namaUser, 'cyan'), 'Age:', color(umurUser, 'cyan'), 'Serial:', color(serialUser, 'cyan'), 'in', color(sender || groupName))
                 } else {
                     addRegisteredUser(sender, namaUser, umurUser, time, serialUser)
-                    await reply(ind.registered(namaUser, umurUser, serialUser, time, sender))
+                    await client.sendMessage(from, ppimg, image, {quoted: mek, caption: ind.registered(namaUser, umurUser, serialUser, time, sender)})
                     addATM(sender)
                     addLevelingId(sender)
                     checkLimit(sender)
@@ -1194,7 +1311,7 @@ client.on('group-participants-update', async (anu) => {
 								fs.unlinkSync(media)
 							})
 					} else {
-						reply('𝗸𝗶𝗿𝗶𝗺 𝗳𝗼𝘁𝗼 𝗱𝗲𝗻𝗴𝗮𝗻 𝗰𝗲𝗽𝘁𝗶𝗼𝗻 ${prefix}𝗼𝗰𝗿')
+						reply('𝗸𝗶𝗿𝗶𝗺 𝗳𝗼𝘁𝗼 𝗱𝗲𝗻??𝗮?? 𝗰𝗲𝗽𝘁𝗶𝗼𝗻 ${prefix}𝗼𝗰𝗿')
 					}
 					await limitAdd(sender)
 				break
@@ -1256,7 +1373,57 @@ client.on('group-participants-update', async (anu) => {
 							} else {
 						reply(`Kirim gambar dengan caption ${prefix}sticker atau reply/tag gambar`)
 					}
-				break
+				break 
+				case 'nulis':
+				const textnulis = body.slice(7)
+				let inputPath ='./lib/magernulis1.jpg'
+ 			   let outputPath = './tmp/hasil.jpg'
+			    let d = new Date
+			    let tgl = d.toLocaleDateString('id-Id')
+			    let hari = d.toLocaleDateString('id-Id', { weekday: 'long' })
+ 			 //  reply('p\n' + util.format({fontPath, inputPath, outputPath, tgl, hari, textnulis}))
+				  spawn('convert', [
+				    inputPath,
+				    '-font',
+				    fontPath,
+				    '-size',
+				    '1024x784',
+				    '-pointsize',
+				    '20',
+ 				   '-interline-spacing',
+				    '1',
+				    '-annotate',
+ 				   '+806+78',
+				    hari,
+  				  '-font',
+  				  fontPath,
+  				  '-size',
+  				  '1024x784',
+  				  '-pointsize',
+  				  '18',
+  				  '-interline-spacing',
+  				  '1',
+  				  '-annotate',
+   				 '+806+102',
+ 				   tgl,
+ 				   '-font',
+  				  fontPath,
+   				 '-size',
+				    '1024x784',
+ 				   '-pointsize',
+ 				   '20',
+  				  '-interline-spacing',
+  				  '-7.5',
+  				  '-annotate',
+ 				   '+344+142',
+ 				   textnulis,
+    				outputPath
+				  ])
+ 				 .on('error', e => reply(util.format(e))
+ 				 .on('exit', () => {
+  			  client.sendMessage(from, outputPath, image, {quoted: mek, caption : ' nih sayang, jangan mager ya sayang'})
+  			}))
+  			  break
 				case 'tts':
 				if (!isRegistered) return reply(ind.noregis())
 				if (isLimit(sender)) return reply(ind.limitend(pusname))
@@ -1313,7 +1480,7 @@ client.on('group-participants-update', async (anu) => {
 						client.sendMessage(from, buffer, image, {quoted: mek, caption: teks})
 					} catch (e) {
 						console.log(`Error :`, color(e,'red'))
-						reply('[𝗘𝗥𝗥𝗢𝗥] 𝗸𝗲𝗺𝘂𝗻𝗴𝗸𝗶𝗻𝗮𝗻 𝘂𝘀𝗲𝗿𝗻𝗮𝗺𝗲 𝘁𝗶𝗱𝗮𝗸 𝘃𝗮𝗹𝗶𝗱')
+						reply('[??𝗥𝗥𝗢??] 𝗸𝗲𝗺𝘂𝗻𝗴𝗸𝗶𝗻𝗮𝗻 𝘂𝘀𝗲𝗿𝗻𝗮𝗺?? 𝘁𝗶𝗱𝗮𝗸 𝘃𝗮𝗹𝗶??')
 					}
 					await limitAdd(sender)
 				break
@@ -1433,7 +1600,7 @@ client.on('group-participants-update', async (anu) => {
 					if (!isGroup) return reply(ind.groupo())
 					if (!isGroupAdmins) return reply(ind.admin())
 					if (!isBotGroupAdmins) return reply(ind.badmin())
-					if (mek.message.extendedTextMessage === undefined || mek.message.extendedTextMessage === null) return reply('𝗧𝗮𝗴 ??𝗮??𝗴𝗲𝘁 𝘆𝗮𝗻𝗴 𝗶𝗻𝗴𝗶𝗻 𝗱𝗶 𝘁𝗲𝗻𝗱𝗮𝗻𝗴!')
+					if (mek.message.extendedTextMessage === undefined || mek.message.extendedTextMessage === null) return reply('𝗧𝗮𝗴 ??𝗮??𝗴𝗲𝘁 𝘆𝗮𝗻𝗴 𝗶𝗻𝗴𝗶𝗻 𝗱𝗶 ????𝗻𝗱𝗮𝗻𝗴!')
 					mentioned = mek.message.extendedTextMessage.contextInfo.mentionedJid
 					if (mentioned.length > 1) {
 						teks = ''
@@ -1489,7 +1656,7 @@ client.on('group-participants-update', async (anu) => {
 					} else if (Number(args[0]) === 0) {
 						welkom.splice(from, 1)
 						fs.writeFileSync('./database/bot/welkom.json', JSON.stringify(welkom))
-						reply('❬ 𝗦𝗨𝗞𝗦𝗘𝗦 ❭ 𝗠𝗲𝗻𝗼𝗻𝗮𝗸𝘁𝗶𝗳𝗸𝗮𝗻 𝗳𝗶𝘁𝘂𝗿 𝘄𝗲𝗹𝗰𝗼𝗺𝗲/𝗹𝗲𝗳𝘁 𝗱𝗶 𝗴𝗿𝗼𝘂𝗽 𝗶𝗻𝗶️')
+						reply('❬ 𝗦𝗨𝗞𝗦𝗘𝗦 ❭ 𝗠𝗲𝗻𝗼𝗻𝗮𝗸𝘁𝗶𝗳𝗸𝗮𝗻 𝗳𝗶𝘁𝘂𝗿 𝘄𝗲𝗹𝗰𝗼??𝗲/𝗹𝗲𝗳𝘁 𝗱𝗶 𝗴𝗿𝗼𝘂𝗽 𝗶𝗻𝗶️')
 					} else {
 						reply(ind.satukos())
 					}
@@ -1523,7 +1690,7 @@ client.on('group-participants-update', async (anu) => {
 					} else if (Number(args[0]) === 0) {
 						nsfw.splice(from, 1)
 						fs.writeFileSync('./database/bot/nsfw.json', JSON.stringify(nsfw))
-						reply('❬ 𝗦𝗨𝗞𝗦𝗘𝗦 ❭ 𝗠𝗲𝗻𝗼𝗻𝗮𝗸𝘁𝗶𝗳𝗸𝗮𝗻 𝗳𝗶𝘁𝘂𝗿 𝗻𝘀𝗳𝘄 𝗱𝗶 𝗴𝗿𝗼𝘂𝗽 𝗶𝗻𝗶️')
+						reply('❬ 𝗦𝗨𝗞𝗦𝗘𝗦 ❭ 𝗠𝗲𝗻𝗼??𝗮𝗸𝘁𝗶𝗳𝗸𝗮𝗻 𝗳𝗶𝘁𝘂𝗿 𝗻𝘀𝗳𝘄 𝗱𝗶 𝗴𝗿𝗼??𝗽 𝗶𝗻𝗶️')
 					} else {
 						reply(ind.satukos())
 					}
@@ -1544,7 +1711,24 @@ client.on('group-participants-update', async (anu) => {
              	   } else {
                  	   reply(ind.satukos())
                 	}
-				break
+				break 
+				case 'nobadword':
+                    if (!isGroup) return reply(ind.groupo())
+                if (!isGroupAdmins) return reply(ind.admin())
+                if (args.length < 1) return reply('Boo :??')
+                if (args[0] === 'enable') {
+                if (isBadWord) return reply('*fitur BadWord sudah aktif sebelum nya*')
+                 	   badword.push(from)
+                 	   fs.writeFileSync('./database/group/badword.json', JSON.stringify(badword))
+                  	   reply(`badword is enable`)
+              	  } else if (args[0] === 'disable') {
+                  	  badword.splice(from, 1)
+                 	   fs.writeFileSync('./database/group/badword.json', JSON.stringify(badword))
+                 	    reply(`badword is disable`)
+             	   } else {
+                 	   reply(ind.satukos())
+                	}
+                    break
 				case 'linkgc':
 				    if (!isGroup) return reply(ind.groupo())
 				    if (isLimit(sender)) return reply(ind.limitend(pusname))
@@ -1570,9 +1754,33 @@ client.on('group-participants-update', async (anu) => {
 				case 'del':
 				case 'd':
 				client.deleteMessage(from, { id: mek.message.extendedTextMessage.contextInfo.stanzaId, remoteJid: from, fromMe: true }) 
-				break
-					
-					
+				break 
+				case 'addbadword':
+                    if (!isOwner) return reply(ind.ownerb())
+                    if (!isGroupAdmins) return reply(ind.admin())
+                    if (args.length < 1) return reply( `Kirim perintah ${prefix}addbadword [kata kasar]. contoh ${prefix}addbadword bego`)
+                    const bw = body.slice(12)
+                    bad.push(bw)
+                    fs.writeFileSync('./database/group/bad.json', JSON.stringify(bad))
+                    reply('Success Menambahkan Bad Word!')
+                    break
+                case 'delbadword':
+                    if (!isOwner) return reply(ind.ownerb())
+                    if (!isGroupAdmins) return reply(ind.admin())
+                    if (args.length < 1) return reply( `Kirim perintah ${prefix}addbadword [kata kasar]. contoh ${prefix}addbadword bego`)
+                    let dbw = body.slice(12)
+                    bad.splice(dbw)
+                    fs.writeFileSync('./database/group/bad.json', JSON.stringify(bad))
+                    reply('Success Menghapus BAD WORD!')
+                    break 
+                case 'listbadword':
+                    let lbw = `Ini adalah list BAD WORD\nTotal : ${bad.length}\n`
+                    for (let i of bad) {
+                        lbw += `➸ ${i.replace(bad)}\n`
+                    }
+                    await reply(lbw)
+                    break 
+                
 				//admin feature 
 				case 'kickall':
                     if (!isOwner) return reply(ind.ownerb())
@@ -1622,7 +1830,24 @@ client.on('group-participants-update', async (anu) => {
 					} else if (Number(args[0]) === 0) {
 						event.splice(from, 1)
 						fs.writeFileSync('./database/bot/event.json', JSON.stringify(event))
-						reply('*❬ 𝗦𝗨𝗞𝗦𝗘𝗦 ❭ 𝗠𝗲𝗻𝗼𝗻𝗮𝗸𝘁𝗶𝗳𝗸??𝗻 EVENT 𝗱𝗶 𝗴𝗿𝗼𝘂𝗽 𝗶𝗻𝗶️*')
+						reply('*❬ 𝗦𝗨𝗞𝗦𝗘𝗦 ❭ 𝗠𝗲𝗻𝗼𝗻𝗮𝗸𝘁??𝗳𝗸??𝗻 EVENT 𝗱𝗶 𝗴𝗿𝗼𝘂𝗽 𝗶𝗻𝗶️*')
+					} else {
+						reply(ind.satukos())
+					}
+					break 
+				case 'antilink':
+					if (!isGroup) return reply(ind.groupo())
+					if (!isOwner) return reply(ind.ownerb())
+					if (args.length < 1) return reply('Boo :𝘃')
+					if (Number(args[0]) === 1) {
+						if (isEventon) return reply('*SUDAH AKTIF* !!!')
+						antilink.push(from)
+						fs.writeFileSync('./database/group/antilink.json', JSON.stringify(antilink))
+						reply('*❬ 𝗦𝗨𝗞𝗦𝗘𝗦 ❭ ACTIVATED ANTILINK*')
+					} else if (Number(args[0]) === 0) {
+						antilink.splice(from, 1)
+						fs.writeFileSync('./database/group/antilink.json', JSON.stringify(antilink))
+						reply('*❬ 𝗦𝗨𝗞𝗦𝗘𝗦 ❭ DEACTIVATED ANTILINK*')
 					} else {
 						reply(ind.satukos())
 					}
@@ -1678,7 +1903,7 @@ client.on('group-participants-update', async (anu) => {
 						for (let _ of anu) {
 							sendMess(_.jid, `*「 BROADCAST BOT 」*\n\n${body.slice(4)}`)
 						}
-						reply('𝙨𝙪𝙘𝙘𝙚𝙨𝙨 𝙗𝙧𝙤𝙖𝙙𝙘𝙖𝙨𝙩 ')
+						reply('𝙨𝙪𝙘𝙘𝙚𝙨𝙨 𝙗𝙧𝙤𝙖𝙙??𝙖𝙨𝙩 ')
 					}
 					break
 					case 'clearall':
@@ -1724,8 +1949,9 @@ client.on('group-participants-update', async (anu) => {
 					break 
 				case 'addprem':
 				if (!isOwner) return reply(ind.ownerb())
-				const pnom = `${args[0].replace('@','')}@s.whatsapp.net`
-				prem.push(pnom)
+				expired = "30d"
+				const pnom = {id: `${args[0].replace("@",'')}@s.whatsapp.net`, expired: Date.now() + toMs(expired) }
+				prem.push(pnom) 
 				fs.writeFileSync('./database/user/prem.json',JSON.stringify(prem))
 				reply(ind.premadd(args[0]))
 				break
@@ -1742,7 +1968,7 @@ client.on('group-participants-update', async (anu) => {
        			 }
  			    }
 				reply(ind.dellprem(args[0]))
-				break
+				break 
 				case 'eval':
 				if (!isOwner) return reply(ind.ownerb())
                 if (!q) return reply(ind.wrongf())
@@ -1754,7 +1980,14 @@ client.on('group-participants-update', async (anu) => {
         	            console.error(err)
           	          await reply('Error!')
   	   	       }
-        	    break
+        	    break 
+        		case 'listonline':
+        		let ido = args && /\d+\-\d+@g.us/.test(args[0]) ? args[0] : from
+			    let online = [...Object.keys(client.chats.get(ido).presences), client.user.jid]
+			    client.sendMessage(from, 'List Online:\n' + online.map(v => '- @' + v.replace(/@.+/, '')).join`\n`, text, { quoted: mek,
+  			  contextInfo: { mentionedJid: online }
+			    })
+				break
 				
 				
 				
