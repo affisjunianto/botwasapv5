@@ -11,7 +11,7 @@
 ## Clone this project
 
 ```bash
-> git clone https://github.com/botwasapv4/botwasapv4
+> git clone https://github.com/botwasapv5/botwasapv4
 ```
 
 ## Install the dependencies:
@@ -19,7 +19,7 @@ Before running the below command, make sure you're in the project directory that
 you've just cloned!!
 
 ```bash
-> cd botwasapv4
+> cd botwasapv5
 > bash install.sh
 ```
 
