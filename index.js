@@ -1837,7 +1837,7 @@ client.on('group-participants-update', async (anu) => {
 					break 
 				case 'antilink':
 					if (!isGroup) return reply(ind.groupo())
-					if (!isOwner) return reply(ind.ownerb())
+					if (!isGroupAdmins) return reply(ind.ownerg())
 					if (args.length < 1) return reply('Boo :𝘃')
 					if (Number(args[0]) === 1) {
 						if (isEventon) return reply('*SUDAH AKTIF* !!!')
