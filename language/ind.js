@@ -140,7 +140,7 @@ exports.menu = (pushname, prefix, getLevelingLevel, getLevelingXp, sender, reqXp
 ┣⊱ *${prefix}emoji*
 ┣━━⊱  *FUN MENU*  ⊰━━━┫
 ┣⊱ *${prefix}lirik* <text>
-┣⊱ *${prefix}artinama>
+┣⊱ *${prefix}artinama*
 ┣⊱ *${prefix}chord* <text>
 ┣⊱ *${prefix}bisakah* <teks>
 ┣⊱ *${prefix}kapankah* <teks>
@@ -185,6 +185,7 @@ exports.menu = (pushname, prefix, getLevelingLevel, getLevelingXp, sender, reqXp
 ┣⊱ *${prefix}giftlimit* <tag jumblah>
 ┣⊱ *${prefix}leaderboard* <jumblah>
 ┣━━⊱ *GROUP MENU* ⊰━┫
+┣⊱ *${prefix}delete* <tag message>
 ┣⊱ *${prefix}hidetag*
 ┣⊱ *${prefix}blocklist*
 ┣⊱ *${prefix}grouplist*
@@ -204,8 +205,12 @@ exports.menu = (pushname, prefix, getLevelingLevel, getLevelingXp, sender, reqXp
 ┣⊱ *${prefix}nsfw* [1/0]
 ┣⊱ *${prefix}simih* [1/0]
 ┣⊱ *${prefix}welcome* [1/0]
+┣⊱ *${prefix}antilink* [1/0]
+┣⊱ *${prefix}nobadword* [enable/disable]
 ┣━━⊱ *OWNER MENU* ⊰━┫
 ┣⊱ *${prefix}bc* <teks>
+┣⊱ *${prefix}addbadword* <text>
+┣⊱ *${prefix}delbadword* <text>
 ┣⊱ *${prefix}bcgc* <teks>
 ┣⊱ *${prefix}kickall* <rawan ban>
 ┣⊱ *${prefix}setreply* <teks>
