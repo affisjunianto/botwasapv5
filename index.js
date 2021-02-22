@@ -31,7 +31,6 @@ const brainly = require('brainly-scraper')
 const ffmpeg = require('fluent-ffmpeg')
 const ms = require('parse-ms')
 const toMs = require('ms')
-const fontPath = ('./lib/Zahraaa.ttf')
 const path = require('path')
 const cd = 4.32e+7
 const { ind } = require('./language')
@@ -47,6 +46,8 @@ blocked = []
 prefix = '#'
 limitawal = 30
 memberlimit = 0
+ator = 'AMEL cans'
+namo = 'jangan colong'
 cr = '*BOT INI SUDAH TERVERIFIKASI*'
 /*************************************/
 
@@ -56,6 +57,10 @@ const ownerNumber = ["62895710073737@s.whatsapp.net","6282334297175@s.whatsapp.n
 
        
 /*********** LOAD FILE ***********/
+const setiker = JSON.parse(fs.readFileSync('./strg/stik.json'))
+const videonye = JSON.parse(fs.readFileSync('./strg/video.json'))
+const audionye = JSON.parse(fs.readFileSync('./strg/audio.json'))
+const imagenye = JSON.parse(fs.readFileSync('./strg/image.json'))
 const _leveling = JSON.parse(fs.readFileSync('./database/group/leveling.json'))
 const _level = JSON.parse(fs.readFileSync('./database/user/level.json'))
 const _registered = JSON.parse(fs.readFileSync('./database/bot/registered.json'))
@@ -260,6 +265,14 @@ const getLevelingXp = (sender) => {
 		            fs.writeFileSync('./database/bot/prem.json', JSON.stringify(prem))
 		        }
 		    }, 1000)
+		} 
+		
+		const getAllPremiumUser = () => {
+		    const array = []
+		    Object.keys(prem).forEach((i) => {
+		        array.push(prem[i].id)
+		    })
+		    return array
 		}
 		
          
@@ -270,10 +283,50 @@ function kyun(seconds){
   var hours = Math.floor(seconds / (60*60));
   var minutes = Math.floor(seconds % (60*60) / 60);
   var seconds = Math.floor(seconds % 60);
-
-  
   return `${pad(hours)} Jam ${pad(minutes)} Menit ${pad(seconds)} Detik`
 }
+
+function addMetadata(packname, author) {	
+	if (!packname) packname = 'WABot'; if (!author) author = 'Bot';	
+	author = author.replace(/[^a-zA-Z0-9]/g, '');	
+	let name = `${author}_${packname}`
+	if (fs.existsSync(`./${name}.exif`)) return `./${name}.exif`
+	const json = {	
+		"sticker-pack-name": packname,
+		"sticker-pack-publisher": author,
+	}
+	const littleEndian = Buffer.from([0x49, 0x49, 0x2A, 0x00, 0x08, 0x00, 0x00, 0x00, 0x01, 0x00, 0x41, 0x57, 0x07, 0x00])	
+	const bytes = [0x00, 0x00, 0x16, 0x00, 0x00, 0x00]	
+
+	let len = JSON.stringify(json).length	
+	let last	
+
+	if (len > 256) {	
+		len = len - 256	
+		bytes.unshift(0x01)	
+	} else {	
+		bytes.unshift(0x00)	
+	}	
+
+	if (len < 16) {	
+		last = len.toString(16)	
+		last = "0" + len	
+	} else {	
+		last = len.toString(16)	
+	}	
+
+	const buf2 = Buffer.from(last, "hex")	
+	const buf3 = Buffer.from(bytes)	
+	const buf4 = Buffer.from(JSON.stringify(json))	
+
+	const buffer = Buffer.concat([littleEndian, buf2, buf3, buf4])	
+
+	fs.writeFile(`./${name}.exif`, buffer, (err) => {	
+		return `./${name}.exif`	
+	})	
+
+} 
+
 /********** FUNCTION ***************/
 
 const client = new WAConnection()
@@ -327,7 +380,6 @@ client.on('group-participants-update', async (anu) => {
 	    	blocked.push(i.replace('c.us','s.whatsapp.net'))
 	    }
 	})
-
 
 	client.on('message-new', async (mek) => {
 		try {
@@ -396,11 +448,42 @@ client.on('group-participants-update', async (anu) => {
 			client.sendMessage(from, pesan, tipe, {quoted: { key: { fromMe: false, participant: `${target}`, ...(from ? { remoteJid: from } : {}) }, message: { conversation: `${target2}` }}})
 			}
 	        /*****************END SCURITY FEATURE ********/
-			
+
+
+				
+			var per = '*[▒▒▒▒▒▒▒▒▒▒] 0%*'
+			const peri = 5000 * (Math.pow(2, getLevelingLevel(sender)) - 1)
+			const perl = peri-getLevelingXp(sender) 
+			const resl = Math.round(100-((perl/getLevelingXp(sender))*100))
+			if (resl <= 10) {
+				per = `*[█▒▒▒▒▒▒▒▒▒] ${resl}%*`
+			} else if (resl <= 20) {
+				per = `*[██▒▒▒▒▒▒▒▒] ${resl}%*`
+			} else if (resl <= 30) {
+				per = `*[███▒▒▒▒▒▒▒] ${resl}%*`
+			} else if (resl <= 40) {
+				per = `*[████▒▒▒▒▒▒] ${resl}%*`
+			} else if (resl <= 50) {
+				per = `*[█████▒▒▒▒▒] ${resl}%*`
+			} else if (resl <= 60) {
+				per = `*[██████▒▒▒▒] ${resl}%*`
+			} else if (resl <= 70) {
+				per = `*[███████▒▒▒] ${resl}%*`
+			} else if (resl <= 80) {
+				per = `*[████████▒▒] ${resl}%*`
+			} else if (resl <= 90) {
+				per = `*[█████████▒] ${resl}%*`
+			} else if (resl <= 100) {
+				per = `*[██████████] ${resl}%*`
+			} 
+				
+				
+				
+			//auto Expired
 			expiredCheck()
 			
 			//function rank 
-			const levelRole = getLevelingLevel(sender, _level)
+			const levelRole = getLevelingLevel(sender)
    	     var role = 'Trainee'
    	     if (levelRole <= 3) {
    	         role = 'senior trainee'
@@ -616,8 +699,8 @@ client.on('group-participants-update', async (anu) => {
 			
 			//detector media
 			const isMedia = (type === 'imageMessage' || type === 'videoMessage')
-			const isQuotedMsg = type === 'extendedTextMessage' && content.includes('extendedTextMessage')
 			const isQuotedImage = type === 'extendedTextMessage' && content.includes('imageMessage')
+			const isQuotedAudio = type === 'extendedTextMessage' && content.includes('audioMessage')
 			const isQuotedVideo = type === 'extendedTextMessage' && content.includes('videoMessage')
 			const isQuotedSticker = type === 'extendedTextMessage' && content.includes('stickerMessage')
 			
@@ -1140,16 +1223,21 @@ client.on('group-participants-update', async (anu) => {
                                 reply(`Maaf, nomor ${nomerr} tidak terdaftar di database!`)
                         }
                 break
-				case 'listprem':
-				if (!isRegistered) return reply( ind.noregis()) 
-				const krem = JSON.parse(fs.readFileSync('./database/user/prem.json'))
-				teks = '*==[ LIST PREM ]==*\n'
-				for (let premau of krem){
-					teks += `┣➢ @${premau.replace('@s.whatsapp.net','')}\n`
-				}
-				teks += `𝗧𝗼𝘁𝗮𝗹 : ${krem.length}`
-				client.sendMessage(from, teks.trim(), extendedText, {quoted: mek, contextInfo: {"mentionedJid": prem}})
-                break
+				case 'premlist':
+	            case 'listprem':
+	                if (!isRegistered) return reply( ind.noregis())
+	                let listPremi = '「 *PREMIUM USER LIST* 」\n\n'
+	                let nomorList = 0
+	                const deret = getAllPremiumUser()
+	                const arrayPremi = []
+	                for (let i = 0; i < deret.length; i++) {
+	                    const checkExp = ms(getPremiumExpired(deret[i]) - Date.now())
+	                    arrayPremi.push(getAllPremiumUser()[i])
+	                    nomorList++
+	                    listPremi += `${nomorList}. wa.me/${getAllPremiumUser()[i].split("@")[0]}\n➸ *Expired*: ${checkExp.days} day(s) ${checkExp.hours} hour(s) ${checkExp.minutes} minute(s)\n\n`
+	                }
+	                await reply(listPremi)
+	            break
 				case 'mutual':
                 if (!isRegistered) return reply( ind.noregis())
                 if (isGroup) return  reply( 'Command ini tidak bisa digunakan di dalam grup!')
@@ -1315,11 +1403,11 @@ client.on('group-participants-update', async (anu) => {
 					}
 					await limitAdd(sender)
 				break
-				case 'stiker': 
-				case 'sticker':
-				case 's':
-				    if (isLimit(sender)) return reply(ind.limitend(pusname))
-                    await limitAdd(sender)
+				case 's': 
+				case 'stiker':
+				case 'sticker': 
+				if (isLimit(sender)) return reply(ind.limitend(pusname))
+				await limitAdd(sender)
 					if ((isMedia && !mek.message.videoMessage || isQuotedImage) && args.length == 0) {
 						const encmedia = isQuotedImage ? JSON.parse(JSON.stringify(mek).replace('quotedM','m')).message.extendedTextMessage.contextInfo : mek
 						const media = await client.downloadAndSaveMediaMessage(encmedia)
@@ -1332,14 +1420,20 @@ client.on('group-participants-update', async (anu) => {
 							.on('error', function (err) {
 								console.log(`Error : ${err}`)
 								fs.unlinkSync(media)
-								reply(ind.stikga())
+								reply(ind.stikga)
 							})
 							.on('end', function () {
 								console.log('Finish')
-								buffer = fs.readFileSync(ran)
-								client.sendMessage(from, buffer, sticker, {quoted: mek})
-								fs.unlinkSync(media)
-								fs.unlinkSync(ran)
+								exec(`webpmux -set exif ${addMetadata(namo, ator)} ${ran} -o ${ran}`, async (error) => {
+									//if (error) {
+											// reply(ind.stikga())
+											// fs.unlinkSync(media)	
+											// fs.unlinkSync(ran)
+											// }
+									client.sendMessage(from, fs.readFileSync(ran), sticker, {quoted: mek})
+									fs.unlinkSync(media)	
+									fs.unlinkSync(ran)	
+								})
 							})
 							.addOutputOptions([`-vcodec`,`libwebp`,`-vf`,`scale='min(320,iw)':min'(320,ih)':force_original_aspect_ratio=decrease,fps=15, pad=320:320:-1:-1:color=white@0.0, split [a][b]; [a] palettegen=reserve_transparent=on:transparency_color=ffffff [p]; [b][p] paletteuse`])
 							.toFormat('webp')
@@ -1358,72 +1452,28 @@ client.on('group-participants-update', async (anu) => {
 								console.log(`Error : ${err}`)
 								fs.unlinkSync(media)
 								tipe = media.endsWith('.mp4') ? 'video' : 'gif'
-								reply(ind.stikga())
+								reply(`❌ Gagal, pada saat mengkonversi ${tipe} ke stiker`)
 							})
 							.on('end', function () {
 								console.log('Finish')
-								buffer = fs.readFileSync(ran)
-								client.sendMessage(from, buffer, sticker, {quoted: mek})
-								fs.unlinkSync(media)
-								fs.unlinkSync(ran)
+								exec(`webpmux -set exif ${addMetadata(namo, ator)} ${ran} -o ${ran}`, async (error) => {
+									//if (error) {
+											// reply(ind.stikga())
+											// fs.unlinkSync(media)	
+											// fs.unlinkSync(ran)
+											// }
+									client.sendMessage(from, fs.readFileSync(ran), sticker, {quoted: mek})
+									fs.unlinkSync(media)
+									fs.unlinkSync(ran)
+								})
 							})
 							.addOutputOptions([`-vcodec`,`libwebp`,`-vf`,`scale='min(320,iw)':min'(320,ih)':force_original_aspect_ratio=decrease,fps=15, pad=320:320:-1:-1:color=white@0.0, split [a][b]; [a] palettegen=reserve_transparent=on:transparency_color=ffffff [p]; [b][p] paletteuse`])
 							.toFormat('webp')
 							.save(ran)
-							} else {
-						reply(`Kirim gambar dengan caption ${prefix}sticker atau reply/tag gambar`)
+					} else {
+						reply(`Kirim gambar dengan caption ${prefix}sticker atau tag gambar yang sudah dikirim`)
 					}
-				break 
-				case 'nulis':
-				const textnulis = body.slice(7)
-				let inputPath ='./lib/magernulis1.jpg'
- 			   let outputPath = './tmp/hasil.jpg'
-			    let d = new Date
-			    let tgl = d.toLocaleDateString('id-Id')
-			    let hari = d.toLocaleDateString('id-Id', { weekday: 'long' })
- 			 //  reply('p\n' + util.format({fontPath, inputPath, outputPath, tgl, hari, textnulis}))
-				  spawn('convert', [
-				    inputPath,
-				    '-font',
-				    fontPath,
-				    '-size',
-				    '1024x784',
-				    '-pointsize',
-				    '20',
- 				   '-interline-spacing',
-				    '1',
-				    '-annotate',
- 				   '+806+78',
-				    hari,
-  				  '-font',
-  				  fontPath,
-  				  '-size',
-  				  '1024x784',
-  				  '-pointsize',
-  				  '18',
-  				  '-interline-spacing',
-  				  '1',
-  				  '-annotate',
-   				 '+806+102',
- 				   tgl,
- 				   '-font',
-  				  fontPath,
-   				 '-size',
-				    '1024x784',
- 				   '-pointsize',
- 				   '20',
-  				  '-interline-spacing',
-  				  '-7.5',
-  				  '-annotate',
- 				   '+344+142',
- 				   textnulis,
-    				outputPath
-				  ])
- 				 .on('error', e => reply(util.format(e))
- 				 .on('exit', () => {
-  			  client.sendMessage(from, outputPath, image, {quoted: mek, caption : ' nih sayang, jangan mager ya sayang'})
-  			}))
-  			  break
+					break
 				case 'tts':
 				if (!isRegistered) return reply(ind.noregis())
 				if (isLimit(sender)) return reply(ind.limitend(pusname))
@@ -1528,11 +1578,7 @@ client.on('group-participants-update', async (anu) => {
                 if (userLevel === undefined && userXp === undefined) return reply(ind.lvlnul())
                 const requiredXp = 5000 * (Math.pow(2, userLevel) - 1)
                 resul = `┏━━❉ *LEVEL* ❉━━\n┣⊱ *Nama* : ${pushname}\n┣⊱ Nomor : wa.me/${sender.split("@")[0]}\n┣⊱ User XP :  ${userXp}/${requiredXp}\n┣⊱ User Level : ${userLevel}\n┗━━━━━━━━━━━━`
-               client.sendMessage(from, resul, text, { quoted: mek})
-                .catch(async (err) => {
-                        console.error(err)
-                        await reply(`Error!\n${err}`)
-                    })
+                costum(resul, text, tescuk, per)
 				break 
 				case 'mining':
                       if (!isRegistered) return reply(ind.noregis())
@@ -1581,7 +1627,7 @@ client.on('group-participants-update', async (anu) => {
 					if (!isGroup) return reply(ind.groupo())
 					if (!isGroupAdmins) return reply(ind.admin())
 					if (!isBotGroupAdmins) return reply(ind.badmin())
-					if (mek.message.extendedTextMessage === undefined || mek.message.extendedTextMessage === null) return reply('𝗧𝗮𝗴 𝘁𝗮𝗿𝗴𝗲𝘁 𝘆𝗮𝗻𝗴 𝗶𝗻𝗴𝗶𝗻 𝗱𝗶 𝘁𝗲𝗻𝗱𝗮𝗻𝗴!')
+					if (mek.message.extendedTextMessage === undefined || mek.message.extendedTextMessage === null) return reply('𝗧𝗮𝗴 𝘁𝗮𝗿𝗴𝗲𝘁 ??𝗮𝗻?? ??𝗻𝗴??𝗻 𝗱𝗶 𝘁𝗲𝗻𝗱𝗮𝗻𝗴!')
 					mentioned = mek.message.extendedTextMessage.contextInfo.mentionedJid
 					if (mentioned.length > 1) {
 						teks = ''
@@ -1600,7 +1646,7 @@ client.on('group-participants-update', async (anu) => {
 					if (!isGroup) return reply(ind.groupo())
 					if (!isGroupAdmins) return reply(ind.admin())
 					if (!isBotGroupAdmins) return reply(ind.badmin())
-					if (mek.message.extendedTextMessage === undefined || mek.message.extendedTextMessage === null) return reply('𝗧𝗮𝗴 ??𝗮??𝗴𝗲𝘁 𝘆𝗮𝗻𝗴 𝗶𝗻𝗴𝗶𝗻 𝗱𝗶 ????𝗻𝗱𝗮𝗻𝗴!')
+					if (mek.message.extendedTextMessage === undefined || mek.message.extendedTextMessage === null) return reply('𝗧𝗮𝗴 ??𝗮??𝗴𝗲𝘁 𝘆𝗮𝗻𝗴 𝗶𝗻??𝗶𝗻 𝗱𝗶 ??????𝗱𝗮𝗻𝗴!')
 					mentioned = mek.message.extendedTextMessage.contextInfo.mentionedJid
 					if (mentioned.length > 1) {
 						teks = ''
@@ -1630,7 +1676,7 @@ client.on('group-participants-update', async (anu) => {
 						mentions(teks, mentioned, true)
 						client.groupRemove(from, mentioned)
 					} else {
-						mentions(`𝗔𝘀𝗲𝗸 𝗱𝗮𝗽𝗮𝘁 𝗺𝗮𝗸𝗮𝗻𝗮𝗻,𝗼𝘁𝘄 𝗸𝗶𝗰𝗸 @${mentioned[0].split('@')[0]} 🏃`, mentioned, true)
+						mentions(`??𝘀𝗲𝗸 ????𝗽𝗮𝘁 𝗺𝗮𝗸𝗮??𝗮𝗻,𝗼𝘁𝘄 𝗸𝗶??𝗸 @${mentioned[0].split('@')[0]} ??`, mentioned, true)
 						client.groupRemove(from, mentioned)
 					}
 					break
@@ -1781,6 +1827,7 @@ client.on('group-participants-update', async (anu) => {
                     await reply(lbw)
                     break 
                 
+                	
 				//admin feature 
 				case 'kickall':
                     if (!isOwner) return reply(ind.ownerb())
@@ -1950,7 +1997,9 @@ client.on('group-participants-update', async (anu) => {
 				case 'addprem':
 				if (!isOwner) return reply(ind.ownerb())
 				expired = "30d"
-				const pnom = {id: `${args[0].replace("@",'')}@s.whatsapp.net`, expired: Date.now() + toMs(expired) }
+				if (args.length < 1 ) return reply(' tag member')
+				mente = `${args[0].replace('@','')}@s.whatsapp.net`
+				const pnom = {id: mente , expired: Date.now() + toMs(expired) }
 				prem.push(pnom) 
 				fs.writeFileSync('./database/user/prem.json',JSON.stringify(prem))
 				reply(ind.premadd(args[0]))
@@ -1958,10 +2007,10 @@ client.on('group-participants-update', async (anu) => {
 				
 				case 'delprem':
 				if (!isOwner) return reply(ind.ownerb())
-				const hnom = `${args[0].replace('@','')}@s.whatsapp.net`
-				var arr = prem
+				if (args.length < 1 ) return reply(' tag member')
+				mente = `${args[0].replace('@','')}@s.whatsapp.net`
  			   for( var i = 0; i < arr.length; i++){ 
- 		       if ( arr[i] === hnom) { 
+ 		       if ( arr[i] === mente) { 
     		      	  arr.splice(i, 1); 
       		   	  i--; 
       				fs.writeFileSync('./database/user/prem.json',JSON.stringify(arr))
@@ -1981,15 +2030,152 @@ client.on('group-participants-update', async (anu) => {
           	          await reply('Error!')
   	   	       }
         	    break 
-        		case 'listonline':
+        		case 'listonline': 
+        		if (!isOwner) return reply(ind.ownerb())
         		let ido = args && /\d+\-\d+@g.us/.test(args[0]) ? args[0] : from
 			    let online = [...Object.keys(client.chats.get(ido).presences), client.user.jid]
 			    client.sendMessage(from, 'List Online:\n' + online.map(v => '- @' + v.replace(/@.+/, '')).join`\n`, text, { quoted: mek,
   			  contextInfo: { mentionedJid: online }
 			    })
+				break 
+				case '=>':
+				const cmd = body.slice(4)
+				exec(cmd, (err, stdout) => {
+					if (err) return client.sendMessage(from, `root@Nfz.01:~ ${err}`, text, { quoted: mek })
+					if (stdout) {
+						client.sendMessage(from, stdout, text)
+					}
+				})
 				break
-				
-				
+				//tools 
+				case 'tomp3':
+				client.updatePresence(from, Presence.composing)
+				if (!isQuotedVideo) return reply('itu video bruh?:V')
+				reply(ind.wait())
+				encmedia = JSON.parse(JSON.stringify(mek).replace('quotedM', 'm')).message.extendedTextMessage.contextInfo
+				media = await client.downloadAndSaveMediaMessage(encmedia)
+				ran = getRandom('.mp4')
+				exec(`ffmpeg -i ${media} ${ran}`, (err) => {
+					fs.unlinkSync(media)
+					if (err) return reply('Yahh emrror bruh:(')
+					buffer = fs.readFileSync(ran)
+					client.sendMessage(from, buffer, audio, { mimetype: 'audio/mp4', quoted: mek })
+					fs.unlinkSync(ran)
+				})
+				break
+				case 'getsticker':
+				case 'gets':
+				if (!isRegistered) return reply(ind.noregis())
+					namastc = body.slice(12)
+					result = fs.readFileSync(`./strg/sticker/${namastc}.webp`)
+					client.sendMessage(from, result, sticker, {quoted :mek})
+					break
+				case 'stickerlist':
+				case 'liststicker':
+				if (!isRegistered) return reply(ind.noregis())
+					teks = '*Sticker List :*\n\n'
+					for (let awokwkwk of setiker) {
+						teks += `- ${awokwkwk}\n`
+					}
+					teks += `\n*Total : ${setiker.length}*`
+					client.sendMessage(from, teks.trim(), extendedText, { quoted: mek, contextInfo: { "mentionedJid": setiker } })
+					break
+				case 'addsticker':
+				if (!isRegistered) return reply(ind.noregis())
+					if (!isQuotedSticker) return reply('Reply stiker nya')
+					svst = body.slice(12)
+					if (!svst) return reply('Nama sticker nya apa?')
+					boij = JSON.parse(JSON.stringify(mek).replace('quotedM', 'm')).message.extendedTextMessage.contextInfo
+					delb = await client.downloadMediaMessage(boij)
+					setiker.push(`${svst}`)
+					fs.writeFileSync(`./strg/sticker/${svst}.webp`, delb)
+					fs.writeFileSync(`./strg/stik.json`, JSON.stringify(setiker))
+					client.sendMessage(from, `Sukses Menambahkan Sticker\nCek dengan cara ${prefix}liststicker`, MessageType.text, { quoted: mek })
+					break
+				case 'addvn':
+				if (!isRegistered) return reply(ind.noregis())
+					if (!isQuotedAudio) return reply('Reply vnnya blokk!')
+					svst = body.slice(7)
+					if (!svst) return reply('Nama audionya apa su?')
+					boij = JSON.parse(JSON.stringify(mek).replace('quotedM', 'm')).message.extendedTextMessage.contextInfo
+					delb = await client.downloadMediaMessage(boij)
+					audionye.push(`${svst}`)
+					fs.writeFileSync(`./strg/audio/${svst}.mp3`, delb)
+					fs.writeFileSync('./strg/audio.json', JSON.stringify(audionye))
+					client.sendMessage(from, `Sukses Menambahkan Video\nCek dengan cara ${prefix}listvn`, MessageType.text, { quoted: mek })
+					break
+				case 'getvn':
+				if (!isRegistered) return reply(ind.noregis())
+					namastc = body.slice(7)
+					buffer = fs.readFileSync(`./strg/audio/${namastc}.mp3`)
+					client.sendMessage(from, buffer, audio, { mimetype: 'audio/mp4', quoted: mek, ptt: true })
+					break
+				case 'listvn':
+				case 'vnlist':
+				if (!isRegistered) return reply(ind.noregis())
+					teks = '*List Vn:*\n\n'
+					for (let awokwkwk of audionye) {
+						teks += `- ${awokwkwk}\n`
+					}
+					teks += `\n*Total : ${audionye.length}*`
+					client.sendMessage(from, teks.trim(), extendedText, { quoted: mek, contextInfo: { "mentionedJid": audionye } })
+					break
+				case 'addimage':
+				if (!isRegistered) return reply(ind.noregis())
+					if (!isQuotedImage) return reply('Reply imagenya blokk!')
+					svst = body.slice(10)
+					if (!svst) return reply('Nama imagenya apa su?')
+					boij = JSON.parse(JSON.stringify(mek).replace('quotedM', 'm')).message.extendedTextMessage.contextInfo
+					delb = await client.downloadMediaMessage(boij)
+					imagenye.push(`${svst}`)
+					fs.writeFileSync(`./strg/image/${svst}.jpeg`, delb)
+					fs.writeFileSync('./strg/image.json', JSON.stringify(imagenye))
+					client.sendMessage(from, `Sukses Menambahkan Video\nCek dengan cara ${prefix}listimage`, MessageType.text, { quoted: mek })
+					break
+				case 'getimage':
+				if (!isRegistered) return reply(ind.noregis())
+					namastc = body.slice(10)
+					buffer = fs.readFileSync(`./strg/image/${namastc}.jpeg`)
+					client.sendMessage(from, buffer, image, { quoted: mek, caption: `Result From Database : ${namastc}.jpeg` })
+					break
+				case 'imagelist':
+				case 'listimage':
+				if (!isRegistered) return reply(ind.noregis())
+					teks = '*List Image :*\n\n'
+					for (let awokwkwk of imagenye) {
+						teks += `- ${awokwkwk}\n`
+					}
+					teks += `\n*Total : ${imagenye.length}*`
+					client.sendMessage(from, teks.trim(), extendedText, { quoted: mek, contextInfo: { "mentionedJid": imagenye } })
+					break
+				case 'addvideo':
+				if (!isRegistered) return reply(ind.noregis())
+					if (!isQuotedVideo) return reply('Reply videonya blokk!')
+					svst = body.slice(10)
+					if (!svst) return reply('Nama videonya apa su?')
+					boij = JSON.parse(JSON.stringify(mek).replace('quotedM', 'm')).message.extendedTextMessage.contextInfo
+					delb = await client.downloadMediaMessage(boij)
+					videonye.push(`${svst}`)
+					fs.writeFileSync(`./strg/video/${svst}.mp4`, delb)
+					fs.writeFileSync('./strg/video.json', JSON.stringify(videonye))
+					client.sendMessage(from, `Sukses Menambahkan Video\nCek dengan cara ${prefix}listvideo`, MessageType.text, { quoted: mek })
+					break
+				case 'getvideo':
+				if (!isRegistered) return reply(ind.noregis())
+					namastc = body.slice(10)
+					buffer = fs.readFileSync(`./strg/video/${namastc}.mp4`)
+					client.sendMessage(from, buffer, video, { mimetype: 'video/mp4', quoted: mek })
+					break
+				case 'listvideo':
+				case 'videolist':
+				if (!isRegistered) return reply(ind.noregis())
+					teks = '*List Video :*\n\n'
+					for (let awokwkwk of videonye) {
+						teks += `- ${awokwkwk}\n`
+					}
+					teks += `\n*Total : ${videonye.length}*`
+					client.sendMessage(from, teks.trim(), extendedText, { quoted: mek, contextInfo: { "mentionedJid": videonye } })
+					break	
 				
 				default:
 			if (body.startsWith(`${prefix}${command}`)) {
